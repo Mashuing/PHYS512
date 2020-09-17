@@ -1,9 +1,26 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import interpolate
+def cos(x):
+    return np.cos(x)
+def lorentz(x):
+    return 1/(1+x**2)
+def func(f,x):
+    a=f
+    if a==0:
+        y =np.cos(x)
+        return y
+    else:
+        z = 1/(1+x**2)
+        return z
+num=1
 #For cos(x)
-xi = np.linspace(-0.5*np.pi,0.5*np.pi,10)
-fun = np.cos(xi)
+# xi = np.linspace(-0.5*np.pi,0.5*np.pi,10)
+
+# fun = func(num,xi)
+#For Lorentzian
+xi = np.linspace(-1,1,10)
+fun = func(num,xi)
 # polynomial 1st
 print("polynomial 1st")
 x = np.linspace(xi[1],xi[-1],1001)
@@ -23,7 +40,7 @@ print("error =",np.std(y_true-y_interp))
 # polynomial 2nd
 print("polynomial 2nd")
 x = np.linspace(xi[1],xi[-2],1001)
-y_true = np.cos(x)
+y_true = func(num,x)
 y_interp = np.zeros(len(x))
 for i in range(len(x)):        
     ind=np.max(np.where(x[i]>=xi)[0])
@@ -37,7 +54,7 @@ print("error =",np.std(y_true-y_interp))
 # polynomial 3rd
 print("polynomial 3rd")
 x = np.linspace(xi[1],xi[-3],1001)
-y_true = np.cos(x)
+y_true = func(num,x)
 y_interp = np.zeros(len(x))
 for i in range(len(x)):        
     ind=np.max(np.where(x[i]>=xi)[0])
@@ -51,7 +68,7 @@ plt.plot(x,y_interp,label = "Third order polynomial")
 # cubic spline
 print("Cubic Spline")
 x = np.linspace(xi[0],xi[-1],1001)
-y_true = np.cos(x)
+y_true = func(num,x)
 y_interp = np.zeros(len(x))
 f = interpolate.interp1d(xi,fun,kind = "cubic")
 y_interp = f(x)
@@ -77,6 +94,7 @@ def rat_fit(x,y,n,m):
     for i in range(1,m):
         mat[:,i-1+n]=-y*x**i
     pars=np.dot(np.linalg.inv(mat),y)
+    #pars=np.dot(np.linalg.pinv(mat),y)
     p=pars[:n]
     q=pars[n:]
     return p,q
@@ -84,17 +102,17 @@ def rat_fit(x,y,n,m):
 
 #1*p0 + x*p1 +x**2+p2+... -q1*x - q2*x**2... = y
 
-n=4
-m=7
+n=5
+m=6
 
 p,q=rat_fit(xi,fun,n,m)
-x = np.linspace(xi[0],xi[-1],1001)
-y_true = np.cos(x)
+x = np.linspace(-5*xi[0],5*xi[-1],1001)
+y_true = func(num,x)
 y_interp = np.zeros(len(x))
 y_interp=rat_eval(p,q,x)
 plt.plot(x,y_interp,label="Rational Function")
 
-print("error =",np.std(y_true-y_interp))
+print("error =",np.std(y_true-y_interp),p,q)
 plt.legend()
 plt.show()
 
