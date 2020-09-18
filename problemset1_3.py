@@ -23,13 +23,13 @@ xi = np.linspace(-1,1,10)
 fun = func(num,xi)
 # polynomial 1st
 print("polynomial 1st")
-x = np.linspace(xi[1],xi[-1],1001)
+x = np.linspace(xi[0],xi[-2],1001)
 y_true = np.cos(x)
 y_interp = np.zeros(len(x))
 for i in range(len(x)):        
     ind=np.max(np.where(x[i]>=xi)[0])
-    x_use=xi[ind-1:ind+1]
-    y_use=fun[ind-1:ind+1]
+    x_use=xi[ind:ind+2]
+    y_use=fun[ind:ind+2]
     pars=np.polyfit(x_use,y_use,1)
     pred=np.polyval(pars,x[i])
     y_interp[i]=pred
@@ -93,26 +93,26 @@ def rat_fit(x,y,n,m):
         mat[:,i]=x**i
     for i in range(1,m):
         mat[:,i-1+n]=-y*x**i
-    pars=np.dot(np.linalg.inv(mat),y)
-    #pars=np.dot(np.linalg.pinv(mat),y)
+    #pars=np.dot(np.linalg.inv(mat),y)
+    pars=np.dot(np.linalg.pinv(mat),y)
+    print(np.linalg.pinv(mat))
     p=pars[:n]
     q=pars[n:]
     return p,q
-
-
 #1*p0 + x*p1 +x**2+p2+... -q1*x - q2*x**2... = y
 
 n=5
 m=6
 
 p,q=rat_fit(xi,fun,n,m)
-x = np.linspace(-5*xi[0],5*xi[-1],1001)
+x = np.linspace(xi[0],xi[-1],1001)
 y_true = func(num,x)
 y_interp = np.zeros(len(x))
 y_interp=rat_eval(p,q,x)
 plt.plot(x,y_interp,label="Rational Function")
 
-print("error =",np.std(y_true-y_interp),p,q)
+print("error =",np.std(y_true-y_interp))
+print("p=",p,"q=",q)
 plt.legend()
 plt.show()
 
