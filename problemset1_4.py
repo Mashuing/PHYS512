@@ -22,30 +22,20 @@ def integrate_step(z,x1,x2,tol):
         a2=integrate_step(z,xm,x2,tol/2)
         return a1+a2
 
-
-#x^3
-#ans=integrate_step(x3,0,1,0.0001)
-#print(ans)
-#assert(1==0)
 d = np.linspace(0,10,1001)
 x0=-1
 x1=1
 E = []
 # Seperate the z=R, using integrator
 for z in d:
+    
     if z==1:
         E.append(0)
     else:
-        ans=integrate_step(z,x0,x1,0.0001)
+        # ans=integrate_step(z,x0,x1,0.0001)
+        fun = lambda x:(z-x)/(1-x**2+(z-x)**2)**1.5
+        ans=integrate.quad(fun,x0,x1)[0]
         E.append(ans)
-    
-#     if z==1:
-#         E.append(0)
-#     else:
-#         # ans=integrate_step(z,x0,x1,0.0001)
-#         fun = lambda x:(z-x)/(1-x**2+(z-x)**2)**1.5
-#         ans=integrate.quad(fun,x0,x1)[0]
-#         E.append(ans)
 # Not seperate the z=R, using scipy.integrate
 # for z in d:
 #     # ans=integrate_step(z,x0,x1,0.0001)
