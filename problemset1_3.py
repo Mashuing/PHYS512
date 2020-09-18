@@ -5,6 +5,7 @@ def cos(x):
     return np.cos(x)
 def lorentz(x):
     return 1/(1+x**2)
+# define the two function, when num=0, fun is cos; num=1, fun is lorentizan
 def func(f,x):
     a=f
     if a==0:
