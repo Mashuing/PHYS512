@@ -2,6 +2,8 @@ import numpy as np
 
 def lorentz(x):
     return 1/(1+x**2)
+def cos(x):
+    return np.cos(x)
 
     
 def integrate_step(fun,x1,x2,tol,s,x_f,y_f,c):
@@ -21,11 +23,14 @@ def integrate_step(fun,x1,x2,tol,s,x_f,y_f,c):
         xii=np.linspace(x1,x2,5)
         yii=[]
         for a in range(len(xii)):
+            d=0
+            for b in range(len(xi)):
 # if a value is not called function, count plus one
-            if xii[a]==xi[a]:
-                yii.append(yi[a])
-                count =count+1
-            else:
+                if xii[a]==xi[b]:
+                    yii.append(yi[b])
+                    count =count+1
+                    d=1
+            if d==0:
                 yii.append(fun(xii[a]))
 # Replace xi, yi with the current value
         xi=xii
@@ -46,6 +51,7 @@ def integrate_step(fun,x1,x2,tol,s,x_f,y_f,c):
         c1=integrate_step(fun,x1,xm,tol/2,i,xi,yi,count)[1]
         c2=integrate_step(fun,xm,x2,tol/2,i,xi,yi,count)[1]
         return a1+a2, c1+c2
-
-ans=integrate_step(lorentz,-10,10,0.001,0,[],[],0)
-print("Integrate Result=",ans[0],"saving function calls= ", ans[1])
+ans1=integrate_step(lorentz,-10,10,0.001,0,[],[],0)
+ans2=integrate_step(cos,-10,10,0.001,0,[],[],0)
+print("integrate lorentz","Integrate Result=",ans1[0],"saving function calls= ", ans1[1])
+print("integrate cos","Integrate Result=",ans2[0],"saving function calls= ", ans2[1])

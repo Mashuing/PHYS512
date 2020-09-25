@@ -17,62 +17,54 @@ def get_poly_A(xs,order):
 
 def fit_cheby(x,y,error,order):
     A=get_chebyshev_A(x, order)
-    # fit=lin_fit(A,y)
-    for o in range(order):
-        if o <= 10:
-            A_o=A[:,:o]
-            fit=lin_fit(A_o,y)
-            pred=A_o@fit
-            e=np.sqrt(np.mean((pred-y)**2))
-            if e <= error:
-                return pred, o
-        else:
-            return print("order not large enough")
-            
-    
+    fit=lin_fit(A,y)
+    for o in range(1, order):
+        pred=A[:,:o]@fit[:o]
+        e=np.abs(pred[-1])
+        if e <= error:
+            return pred, o-1,e
+    return "Maximum order, not correct"
+               
 def lin_fit(A,y):
     u,s,v=np.linalg.svd(A,0)
     fitp=v.T@(np.diag(1/s)@(u.T@y))
     return fitp
-x= np. linspace(-1,1,100)
+x= np. linspace(-1,1,201)
+x_t = np.linspace(0.5,1,len(x))
 y_true = np.log2((x+3)/4)
 # sig =1
 # y = y_true + sig*np.random.randn(len(x))
 y = y_true
 # plt.plot(x,y_true)
-#choose order
+#choose maximum order for cheby
 order1 = 20
 #fit with truncated cheby
 y_pred1=fit_cheby(x,y,1e-6,order1)[0]
 order =fit_cheby(x,y,1e-6,order1)[1]
-print("truncated Cheby","order=",order)
+error = fit_cheby(x,y,1e-6,order1)[2]
+print("truncated Cheby","order=",order,"Error at order",error)
 print('RMS error after fit is ' + repr(np.sqrt(np.mean((y_pred1-y_true)**2))))
-print('max error after fit is ' + repr(np.max((y_pred1-y_true)**2)))
-# print('RMS error after fit is ' + repr(np.sqrt(np.mean((y_pred1- y_true)**2))))
-#fit with chebyshev written by myself
-# A2=get_chebyshev_A(x,order)
-# u2,s2,v2=np.linalg.svd(A2,0)
-# fitp2=v2.T@(np.diag(1/s2)@(u2.T@y))
-# y_pred2=A2@fitp2
-# y_pred2 = A2@lin_fit(A2,y)
-# print("Cheby")
-# print('RMS error after fit is ' + repr(np.sqrt(np.mean((y_pred2-y_true)**2))))
-# print('max error after fit is ' + repr(np.max((y_pred2-y_true)**2)))
-#fit with legendre poly
-A3=np.polynomial.legendre.legvander(x,order)
+print('max error after fit is ' + repr(np.sqrt(np.max((y_pred1-y_true)**2))))
+
+#fit with Regular poly
+A3=get_poly_A(x,order)
 y_pred3 = A3@lin_fit(A3,y)
 print("legendre")
 print('RMS error after fit is ' + repr(np.sqrt(np.mean((y_pred3-y_true)**2))))
-print('max error after fit is ' + repr(np.max((y_pred3-y_true)**2)))
+print('max error after fit is ' + repr(np.sqrt(np.max((y_pred3-y_true)**2))))
 fig1 = plt.figure()
-plt.plot(x,y,'*')
-plt.plot(x,y_pred1,label="truncated cheby")
+plt.scatter(x_t,y,label="True Value",s = 100,marker="+")
+plt.title("Cheby and poly fit")
+plt.plot(x_t,y_pred1,label="truncated cheby",color = "Green")
 # plt.plot(x,y_pred2, label = "written cheby")
-plt.plot(x,y_pred3, label = "legendre poly")
+plt.plot(x_t,y_pred3, label = "Regular poly",color="red")
+plt.legend()
+plt.show()
 fig2 = plt.figure()
-plt.scatter(x,y_pred1-y_true,label = "truncated cheby",s=15)
-# plt.scatter(x,y_pred2-y_true,label = "written cheby",s=15)
-plt.scatter(x,y_pred3-y_true,label = "legendre poly",s=15)
-plt.ylim(min((y_pred1-y_true)),max(y_pred1 - y_true))
+y_pred1_d = y_pred1-y_true
+y_pred3_d = y_pred3-y_true
+plt.scatter(x_t,y_pred1_d,label = "truncated cheby",s=15)
+plt.scatter(x_t,y_pred3_d,label = "Regular poly",s=15)
+plt.title("Residual of the cheby and poly fit")
 plt.legend()
 plt.show()
