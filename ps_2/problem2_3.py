@@ -25,8 +25,15 @@ U238 = ans_stiff.y[0]
 U234 = ans_stiff.y[3]
 T230 = ans_stiff.y[4]
 fig1 = plt.figure()
+# plt.plot(t,U238,label="U238")
 plt.plot(t,Pb206/U238,label="Pb206 to U238")
+plt.xlabel("time/s")
+plt.legend()
+plt.show()
 fig2 = plt.figure()
-plt.plot(t,U234/T230, label="U234/T230")
+plt.plot(t,U234/T230, label="U234/Th230")
+# plt.xlim(1e8,0.5e12)
+plt.xlabel("time/s")
+plt.ylim(0,200)
 plt.legend()
 plt.show()
