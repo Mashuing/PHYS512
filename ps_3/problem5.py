@@ -106,8 +106,8 @@ def run_chain_corr(pars,chifun,data,corr_mat,nsamp=5000):
                 print("walk step=",accept)
         chain[i,:]=pars
         chivec[i]=chisq
-        np.savetxt("chain_with prior.txt",chain)
-        np.savetxt("chivec_with prior.txt",chivec)
+        np.savetxt("chain_withprior.txt",chain)
+        np.savetxt("chivec_withprior.txt",chivec)
                 
             
     return chain,chivec
