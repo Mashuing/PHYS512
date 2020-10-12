@@ -82,6 +82,7 @@ def num_deriv(fun,x,pars,dpar):
         derivs[:,i]=(f_right-f_left)/(2*dpar[i])
     return derivs
 def run_chain_corr(pars,chifun,data,corr_mat,nsamp=5000):
+    accept=0
     npar=len(pars)
     chain=np.zeros([nsamp,npar])
     chivec=np.zeros(nsamp)
@@ -97,9 +98,10 @@ def run_chain_corr(pars,chifun,data,corr_mat,nsamp=5000):
             chi_new=chifun(pars_trial,data)
             delta_chi=chi_new-chisq
             if np.random.rand(1)<np.exp(-0.5*delta_chi):
+                accept += 1
                 chisq=chi_new
                 pars=pars_trial
-                print("walk")
+                print("walk step=",accept)
         chain[i,:]=pars
         chivec[i]=chisq
                 
@@ -122,7 +124,7 @@ tau = 0.05
 dtau =tau/10.
 tol = 1e-6
 chisq=np.sum(((y-get_spectrum(pars))/noise)**2)+2*tol
-for i in range(2):
+for i in range(10):
     model=get_spectrum(pars)
     t_chisq = np.sum(((y-model)/noise)**2)
     if 0 < chisq - t_chisq < tol:
@@ -160,6 +162,11 @@ print('final parameters are ',pars,' with errors ',par_errs)
 
 data = [x,y,noise]
 mycov = lhs_inv
-chain,chivec=run_chain_corr(pars,chifun,data,mycov,50)
-np.linspace()
+chain,chivec=run_chain_corr(pars,chifun,data,mycov,10000)
+n = np.linspace(1,10000,10000)
+fig1,ax1 = plt.subplot()
+paras = np.mean(chain,axis=0)
+error = np.std(chain,axis=0)
+for i in range(6):
+    ax1.plot(n,chain[:,i],label=("chain"+str(i)))
 
