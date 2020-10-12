@@ -88,8 +88,9 @@ def run_chain_corr(pars,chifun,data,corr_mat,nsamp=5000):
     chivec=np.zeros(nsamp)
     chisq=chifun(pars,data)
     L=np.linalg.cholesky(corr_mat)
+#  change a smaller step size
     for i in range(nsamp):
-        pars_trial=pars+L@np.random.randn(npar)
+        pars_trial=pars+L@np.random.randn(npar)*0.4
         tau = pars_trial[3]
         if tau<0:
             print("jump")
@@ -104,7 +105,8 @@ def run_chain_corr(pars,chifun,data,corr_mat,nsamp=5000):
                 print("walk step=",accept)
         chain[i,:]=pars
         chivec[i]=chisq
-                
+        np.savetxt("chain_no priror.txt",chain)
+        np.savetxt("chivec_no priror.txt",chivec)
             
     return chain,chivec
 
