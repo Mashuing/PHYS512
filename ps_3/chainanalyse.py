@@ -21,7 +21,7 @@ plt.rcParams['xtick.major.size'   ] = 10
 plt.rcParams['ytick.major.size'   ] = 10
 plt.rcParams['axes.linewidth'     ] = 2
 plt.rcParams['patch.linewidth'    ] = 0
-plt.rcParams['legend.fontsize'    ] = 15
+plt.rcParams['legend.fontsize'    ] = 10
 plt.rcParams['xtick.direction'    ] = 'in'
 plt.rcParams['ytick.direction'    ] = 'in'
 plt.rcParams['ytick.right'        ] = True
@@ -84,7 +84,4 @@ for i in range(chain1.shape[1]):
     chain1_scat[:,i]=chain1_scat[:,i]-means[i]
     chain1_errs[i]=np.sqrt(np.sum(chain1_scat[:,i]**2*wtvec)/np.sum(wtvec))
 
-chain1_scat_=chain1_scat/scale
-mean3 = np.mean(chain1_scat,axis=0)
-sigma3 = np.std(chain1_scat,axis=0)
 print("With important sample by tau, pararmeters = "+str(means)+ "Error in parameters= "+str(chain1_errs))
