@@ -105,8 +105,8 @@ def run_chain_corr(pars,chifun,data,corr_mat,nsamp=5000):
                 print("walk step=",accept)
         chain[i,:]=pars
         chivec[i]=chisq
-        np.savetxt("chain_nopriror.txt",chain)
-        np.savetxt("chivec_nopriror.txt",chivec)
+        np.savetxt("chain_noprior.txt",chain)
+        np.savetxt("chivec_noprior.txt",chivec)
             
     return chain,chivec
 
@@ -166,8 +166,8 @@ data = [x,y,noise]
 mycov = lhs_inv
 chain,chivec=run_chain_corr(pars,chifun,data,mycov,10000)
 n = np.linspace(1,10000,10000)
-fig1,ax1 = plt.subplot()
-paras = np.mean(chain,axis=0)
+fig1,ax1 = plt.subplots()
+sparas = np.mean(chain,axis=0)
 error = np.std(chain,axis=0)
 for i in range(6):
     ax1.plot(n,chain[:,i],label=("chain"+str(i)))

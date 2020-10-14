@@ -107,80 +107,19 @@ lhs_inv=np.linalg.inv(lhs)
 par_sigs=np.sqrt(np.diag(lhs_inv))
 par_errs=np.sqrt(np.diag(np.linalg.inv(lhs)))
 print('final parameters are ',pars,' with errors ',par_errs)
-# final parameters are  [6.93035928e+01 2.24912627e-02 1.13980892e-01 2.04301157e-09
-# 9.69721455e-01]  with errors  [2.40264724e+00 5.35871977e-04 5.21471608e-03 3.90921325e-11
-# 1.34219098e-02]
-# # change tau, fix the other parameters
-# pars_notau = [6.93035928e+01, 2.24912627e-02, 1.13980892e-01, 2.04301157e-09, 9.69721455e-01]
-# pars=np.asarray([65,0.02,0.1,2e-9,0.96])
-# # pars_guess = np.asarray([60,0.01,0.08,0.05,3e-9,1.20])
-# wmap=np.loadtxt('wmap_tt_spectrum_9yr_v5.txt')
-# x = wmap[:,0]
-# y=  wmap[:,1]
-# noise  = wmap[:,2]
-# def get_spectrum(pars,tau=0.05,lmax=2000):
-#     # print('pars are ',pars)
-#     H0=pars[0]
-#     ombh2=pars[1]
-#     omch2=pars[2]
-#     tau=tau
-#     As=pars[3]
-#     ns=pars[4]
-#     pars=camb.CAMBparams()
-#     pars.set_cosmology(H0=H0,ombh2=ombh2,omch2=omch2,mnu=0.06,omk=0,tau=tau)
-#     pars.InitPower.set_params(As=As,ns=ns,r=0)
-#     pars.set_for_lmax(lmax,lens_potential_accuracy=0)
-#     results=camb.get_results(pars)
-#     powers=results.get_cmb_power_spectra(pars,CMB_unit='muK')
-#     cmb=powers['total']
-#     pred = cmb[2:len(wmap[:,0])+2,0]
-#     return pred
+fig1, ax1 = plt.subplots()
+# ax1.errorbar(wmap[:,0],wmap[:,1],wmap[:,2],fmt='*')
+ax1.plot(wmap[:,0],wmap[:,1],'.')
 
-# def num_deriv(fun,x,pars,dpar):
-#     #calculate numerical derivatives of 
-#     #a function for use in e.g. Newton's method or LM
-#     derivs=np.zeros([len(x),len(pars)])
-#     for i in range(len(pars)):
-#         pars2=pars.copy()
-#         pars2[i]=pars2[i]+dpar[i]
-#         f_right=fun(pars2)
-#         pars2[i]=pars[i]-dpar[i]
-#         f_left=fun(pars2)
-#         derivs[:,i]=(f_right-f_left)/(2*dpar[i])
-#         return derivs
-# Ninv=np.eye(len(x))/noise**2
-# dpar=pars/10.0
-# pars = pars
-# tol = 1e-6
-# tau = 0.05
-# dtau = tau/10.0
-# chisq=np.sum(((y-get_spectrum(pars))/noise)**2)+2*tol
-# for i in range(10):
-#     model=get_spectrum(pars)
-#     t_chisq = np.sum(((y-model)/noise)**2)
-#     if 0 < chisq - t_chisq < tol:
-#         print ("get the good result")
-#         break
-#     chisq = t_chisq
-#     derivs=num_deriv(get_spectrum,x,pars,dpar)
-#     resid=y-model
-#     lhs=derivs.T@Ninv@derivs
-#     rhs=derivs.T@Ninv@resid
-#     lhs_inv=np.linalg.inv(lhs)
-#     step=lhs_inv@rhs
-#     pars=pars+step
-#     print(pars, chisq)
-# #  without consider tau
-# par_sigs=np.sqrt(np.diag(lhs_inv))
-# par_errs=np.sqrt(np.diag(np.linalg.inv(lhs)))
-# print('final parameters are ',pars,' with errors ',par_errs)
-# pars_best = pars
-# pars = np.insert(pars,3,tau)
-# f_r = get_spectrum(pars_best,tau+dtau)
-# f_l = get_spectrum(pars_best,tau-dtau)
-# derivs_tau = (f_r-f_l)/(2*dtau)
-# derivs = np.insert(derivs,derivs_tau,axis=3)
+cmb=get_spectrum(pars_best)
+sig  = wmap[:,2]
+pred = cmb
+chisq = np.sum(((wmap[:,1]-pred)/sig)**2)
+ax1.plot(pred)
+plt.legend()
+plt.show()
+print("chisquare = ", chisq)
 
-# since we have a curvature estimate from Newton's method, we can
-# guess our chain sampling using that
+
+
 
