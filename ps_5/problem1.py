@@ -69,13 +69,18 @@ def read_file(filename):
 
     dataFile.close()
     return strain,dt,utc
-
+# Here is the function to have noise model
 def noise_m(strain,win,n):
+#  Apply window
     window = sig.get_window(win,len(strain))
     strain_win = strain*window
+# Do fft to strain
     sft  = np.fft.rfft(strain_win)
+# Set the strain sqaure as noise model
     N = np.abs(sft)**2
+    #  smooth the noise
     N_s = smooth(N,n)
+    #  Higher the peak
     N_smax = np.maximum(N,N_s)
     return N, N_smax
 
@@ -95,13 +100,17 @@ def mfilter(strain,tem,win,dt):
 def SNR_scatter(mf,start,end):
     SNR = np.max(np.abs(mf))/np.std(mf[start:end])
     return SNR
+# load template, noise model, match filter, window function
 def SNR_nm(temp,nm,mf,win):
     window = sig.get_window(win,len(strain))
+#  fft of template
     tft = np.fft.rfft(temp)
     rhs = mf
+    #  calcualte sigma
     lhs = np.conj(tft)*(tft/nm)
     lhs_t = np.fft.irfft(lhs)
     noi = np.sqrt(np.abs(lhs_t))
+#  get the siganl to noise ratio
     return np.max(np.abs(mf/noi))
   
 # #fnames=glob.glob("[HL]-*.hdf5")
@@ -122,36 +131,39 @@ window ='hann'
 H_fname = ['H-H1_LOSC_4_V1-1167559920-32.hdf5','H-H1_LOSC_4_V2-1126259446-32.hdf5','H-H1_LOSC_4_V2-1128678884-32.hdf5','H-H1_LOSC_4_V2-1135136334-32.hdf5']
 L_fname = ['L-L1_LOSC_4_V1-1167559920-32.hdf5','L-L1_LOSC_4_V2-1126259446-32.hdf5','L-L1_LOSC_4_V2-1128678884-32.hdf5','L-L1_LOSC_4_V2-1135136334-32.hdf5']
 Templates = ['GW150914_4_template.hdf5','GW151226_4_template.hdf5','GW170104_4_template.hdf5','LVT151012_4_template.hdf5']
-for p in n:    
-    # for name in H_fname:
-    name=H_fname[0]
+# for p in n:    
+for name in L_fname:
+    # name=H_fname[0]
     strain,dt,utc = read_file(name)
-    N = noise_m(strain,window,p)[0]
-    N_s =noise_m(strain,window,p)[1]
-    ax1.loglog(N_s, label=str(name)+'n='+str(p))
+    N = noise_m(strain,window,6)[0]
+    N_s =noise_m(strain,window,6)[1]
+    ax1.loglog(N_s, label=str(name))
 # for p in n:    
 #     for name in H_fname:
 #         strain,dt,utc = read_file(name)
 #         N = noise_m(strain,window,p)[0]
 #         N_s =noise_m(strain,window,p)[1]
 #         ax1.loglog(N_s, label=str(name)+'n='+str(p))
-            
+ax1.set_xlabel("frequency")
+ax1.set_ylabel("strain")          
 plt.legend()
 plt.show()
 #B make the match filter
 fig2, ax2 = plt.subplots()
-tname = Templates[0]
+tname = Templates[3]
 temp0, tl0 = read_template(tname)
-Hname=H_fname[1]
-Lname = L_fname[1]
+Hname=H_fname[2]
+Lname = L_fname[2]
 strainH,dtH,utcH = read_file(Hname)
 strainL,dtL,utcL = read_file(Lname)
 print("Strain:"+Hname+"and"+Lname)
 print("Template:"+tname)
 mf_H = mfilter(strainH,temp0,window,dtH)[2]
 mf_L = mfilter(strainL,temp0,window,dtL)[2]
-ax2.plot(mf_H,label='H')
-ax2.plot(mf_L,label='L')
+ax2.plot(mf_H,label=str(Hname))
+ax2.plot(mf_L,label=str(Lname))
+ax2.set_xlabel("Time")
+ax2.set_ylabel("Match filter")
 plt.legend()
 plt.show()
 
@@ -175,4 +187,4 @@ print('SNR of combined Hanford and Livingston with noise model :'+str(np.sqrt(SN
 midfreq_H= mfilter(strainH,temp0,window,dtH)[3]
 midfreq_L = nm_L =  mfilter(strainL,temp0,window,dtL)[3]
 print("Mid frequency of Hanford:"+str(midfreq_H))
-print("Mid frequency of Liveingston:"+str(midfreq_H))
+print("Mid frequency of Liveingston:"+str(midfreq_L))
