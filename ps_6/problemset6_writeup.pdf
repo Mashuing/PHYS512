@@ -1,0 +1,219 @@
+% --------------------------------------------------------------
+% This is all preamble stuff that you don't have to worry about.
+% Head down to where it says "Start here"
+% --------------------------------------------------------------
+\documentclass[12pt,english]{article}
+
+\usepackage[letterpaper]{geometry}
+\geometry{verbose,tmargin=1in,bmargin=3cm,lmargin=3cm,rmargin=3cm}
+
+\usepackage[font=small, width=0.9\textwidth]{caption}
+
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{url} 
+\usepackage{cite}
+\usepackage{graphicx}
+\usepackage{afterpage}
+\usepackage{enumitem}  
+\usepackage{color}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{todonotes}
+\usepackage{epigraph}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{authblk}
+\usepackage{babel}
+\usepackage{hyperref}
+\usepackage{lmodern}
+\usepackage{mathrsfs}
+\usepackage{sistyle}
+\usepackage{subfigure}  % use for side-by-side figures
+\usepackage{verbatim}   % useful for program listings
+\usepackage{upgreek}
+\usepackage{float}
+\raggedbottom   
+
+\makeatletter
+
+\usepackage[numbers,sort&compress,comma]{natbib}
+
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	urlcolor=red,
+	citecolor=blue
+}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhead{} % Clears the standard fancy style
+\lhead{\nouppercase\rightmark}
+
+% Reduce the separation between itemized lists.
+\usepackage{enumitem}
+
+
+
+
+% Section
+\renewcommand\section{%
+	\@startsection {section}{1}%
+	{\z@}{-16pt \@plus 0pt \@minus 0pt}%
+	{8pt \@plus.2ex}%
+	{\normalfont\large\bfseries\scshape}}
+
+% Subsection
+\renewcommand\subsection{%
+	\@startsection {subsection}{1}%
+	{\z@}{-8pt \@plus 0pt \@minus 0pt}%
+	{4pt \@plus.2ex}%
+	{\normalfont\normalsize\bfseries}}
+
+% Subsubsection
+\renewcommand\subsubsection{%
+	\@startsection {subsubsection}{1}%
+	{\z@}{-8pt}%
+	{0.001pt \@plus 0pt}%
+	{\normalfont\normalsize\bfseries}}
+
+% Paragraph
+\renewcommand{\paragraph}{%
+	\@startsection{paragraph}{4}%
+	{\z@}{-8pt}{-0.5em}%
+	{\normalfont\normalsize\bfseries}%
+}
+
+\makeatother
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\usepackage{empheq}
+\usepackage{xcolor}
+
+\usepackage{braket}
+\usepackage{mathtools}  
+
+
+\let\oldsection\section
+\renewcommand\section{\clearpage\oldsection}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                     Start here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\begin{document}
+Here is the report of PHYS512 problemset 6 written by Jiaxing MA.
+\section*{problem1}
+I use 3D plot to show the (x,y,z) triples, here is the code I use:
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{ps1_code1.jpg}
+	\caption{}
+	\label{fig1}
+\end{figure}
+By rotating the figure, I found at certain angle, these triples are in same planes.
+Here is the figure:
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{ps1_fig1.jpg}
+	\caption{}
+	\label{fig1}
+\end{figure}
+Then I generate random triples using the generator from the python, I couldn't find the triples in the same planes, here is the code and image:
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{ps1_code2.jpg}
+	\caption{}
+	\label{fig1}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{ps1_fig2.jpg}
+	\caption{}
+	\label{fig1}
+\end{figure}
+I cannot figure out libc.so for window.
+\section*{problem2}
+I used power laws as bounding function, I choose to use $y = x^{-3}$ to generate random exponential deviate $y = e^{-x}$
+Here is the code I generate random power law,
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{ps2_code1.jpg}
+	\caption{}
+	\label{fig1}
+\end{figure}
+I adjust the ratio of the power law function to make the power law larger than exponential function, here is the figure.
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{ps2_fig1.jpg}
+	\caption{The histogram is random power law function, the red curve is the function $y = 1.355x^{-3}$, the blue curve is the function $y = e^{-x}$.}
+	\label{fig1}
+\end{figure}
+Here is the code that I used to generate exponential from power law function.
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{ps2_code2.jpg}
+	\caption{}
+	\label{fig1}
+\end{figure}
+Here is the result:
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{ps2_fig2.jpg}
+	\caption{}
+	\label{fig1}
+\end{figure}
+To calculate the efficiency of the generator, I try to change the constant in the expfrompower function, and I find that with the constant 1/1.355, the maximum accept probability is slightly smaller than 1, and the efficiency is the largest I could find, which is 0.542 accept rate. I also compare the speed of rejection method and transformation method to generate random exponential function, the rejection method is much slower.
+How is the code I used to calculate how many uniform deviates that transform to exponential deviates. I divided the lens of exponential deviates array to the len of uniform deviates.
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.8]{ps2_code3.jpg}
+	\caption{}
+	\label{fig1}
+\end{figure} 
+Here is the result I got:
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.8]{ps2_result1.jpg}
+	\caption{}
+	\label{fig1}
+\end{figure}
+\section*{problem3}
+To generate the exponential deviates using ratio-of-uniform method, I choose the limits on v from 0 to 1, and after optimize the efficiency, I changed it to from 0 to 0.75. The efficiency I got is 0.6667.
+Here is the ratio-of-uniform code I got.
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.8]{ps3_code1.jpg}
+	\caption{}
+	\label{fig1}
+\end{figure}
+Here is the code that i calculate the efficiency
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.8]{ps3_code2.jpg}
+	\caption{}
+	\label{fig1}
+\end{figure}
+Here is the result I got: the histogram and the efficiency.
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.8]{ps3_fig1.jpg}
+	\caption{}
+	\label{fig1}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.8]{ps3_result1.jpg}
+	\caption{}
+	\label{fig1}
+\end{figure}
+\end{document}
