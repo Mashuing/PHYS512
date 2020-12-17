@@ -105,56 +105,58 @@ def covvol(v,n):
     v_r = v/np.sqrt(2*n)
     return v_r
 # grid size
-n =32
+n =128
 # number of particles
-N =1
-dt=0.5
+N =2
+dt=0.01
 oversample = 1
 T=0
 
 # x = n*np.random.rand(N,3)
 # v = 0*np.random.rand(N,3)
 
-# x= np.array([[64,64,64],[64,44,64]])
-# v=np.array([[0.,0.,0],[40.47,0,0]])
-x= np.array([[16,16,16]])
-v=np.array([[0.,0.,0]])
+x= np.array([[64,64,64],[64,34,64]])
+v= np.array([[0.,0.,0],[34.15,0,0]])
+# x= np.array([[64,64,64],[44,64,64]])
+# v=0*np.array([[0.,0.,0],[40.47,0,0]])
+# x= np.array([[16,16,16]])
+# v=np.array([[0.,0.,0]])
 
 print(x)
 m=np.ones(N)
-m[0]=1
+m[0]=1000
 kernel=greens(2*n,0)
 kernelft=np.fft.rfftn(kernel)
 den = density(x,n,m)[0]
 pot = rho2pot(den,kernelft)
-# Check the force plot
-den = density(x,n,m)[0]
-pot = rho2pot(den,kernelft)
-nf = n
-dx,dy,dz = get_forces_2(pot,1/n)
-x = np.arange(nf)
-X, Y = np.meshgrid(x, x)
-dx2d=np.zeros([nf,nf])
-dy2d=np.zeros([nf,nf])
-dz2d=np.zeros([nf,nf])
-for i in range(nf):
-    for j in range(nf):
-          dx2d[i,j]=dx[i,j,nf//2]
-          dy2d[i,j]=dy[i,j,nf//2]
-          dz2d[i,j]=dz[i,j,nf//2]
+# # Check the force plot
+# den = density(x,n,m)[0]
+# pot = rho2pot(den,kernelft)
+# nf = n
+# dx,dy,dz = get_forces_2(pot,1/n)
+# x = np.arange(nf)
+# y = np.arange(nf)[::-1]
+# X, Y = np.meshgrid(x, y)
+# dx2d=np.zeros([nf,nf])
+# dy2d=np.zeros([nf,nf])
+# dz2d=np.zeros([nf,nf])
+# for i in range(nf):
+#     for j in range(nf):
+#           dx2d[i,j]=dx[i,j,nf//2]
+#           dy2d[i,j]=dy[i,j,nf//2]
+#           dz2d[i,j]=dz[i,j,nf//2]
 
-fig1, ax1 = plt.subplots()
-fig2, ax2 = plt.subplots()
-zero=np.zeros(dy.shape)
-ax2.imshow(dx[:,:,nf//2])
-ax1.quiver(Y, X,dx[:,:,nf//2],dy[:,:,nf//2])
-
-ax1.xaxis.set_ticks([])
-ax1.yaxis.set_ticks([])
-ax1.set_aspect('equal')
-plt.show()
+# fig1, ax1 = plt.subplots()
+# fig2, ax2 = plt.subplots()
+# zero=np.zeros(dy.shape)
+# ax2.imshow(dx[:,:,nf//2])
+# ax1.quiver(Y, X,dx[:,:,nf//2],dy[:,:,nf//2])
+# ax1.xaxis.set_ticks([])
+# ax1.yaxis.set_ticks([])
+# ax1.set_aspect('equal')
+# plt.show()
 # r = take_step(x,v,dt,n,kernelft,m)
-# # Check if the potential for one particle in 3d is correct
+# Check if the potential for one particle in 3d is correct
 
 # pot2d = np.zeros([nf,nf])
 # x = 0
@@ -165,15 +167,16 @@ plt.show()
 
 
 # Start the simulation
-fig=plt.figure()#Create 3D axes
-ax=fig.add_subplot(projection="3d")
+fig=plt.figure(figsize=(8,16))#Create 3D axes
+ax1 = fig.add_subplot(2,1,1,projection="3d")
+ax2 = fig.add_subplot(2,1,2)
 a=0
 position = []
-f= open('D:\git_code\PHYS512\project\ps_a\position.npy','ab')
+f= open('D:\git_code\PHYS512\project\ps_b\position.npy','ab')
 ener = []
 time = []
 
-for t in range(200):
+for t in range(1000):
      T=T+dt
      position.append(x)
      np.save(f,position)
@@ -181,17 +184,18 @@ for t in range(200):
      ener.append(E)
      time.append(T)
      if t%oversample==0:
-         plt.cla()
-         ax.scatter(x[:,0],x[:,1],x[:,2],color='blue',marker=".",s=2)
-         ax.set_xlim(0,n)
-         ax.set_ylim(0,n)
-         ax.set_zlim(0,n)
-         ax.set_title('Time ='+str(T)+"\nEnergy="+str(E))
-         fig.savefig('D:/git_code/PHYS512/project/ps_a/'+'bla'+str(t)+'.png', dpi=600)
-         
-                
-         plt.pause(0.001)
-     np.savetxt('D:\git_code\PHYS512\project\ps_a\Energy.txt',ener)
+           ax1.scatter(x[:,0],x[:,1],x[:,2],color='blue',marker=".",s=3)
+           ax1.set_xlim(0,n)
+           ax1.set_ylim(0,n)
+           ax1.set_zlim(0,n)
+           ax1.view_init(90, 90)
+           ax2.scatter(x[:,0],x[:,1],color='blue',marker=".",s=3)
+           ax2.set_xlim(0,n)
+           ax2.set_ylim(0,n)
+           ax2.set_aspect(aspect=1.)
+           fig.savefig('D:/git_code/PHYS512/project/ps_b/'+'bla'+str(t)+'.png', dpi=600)
+           plt.pause(0.001)
+     np.savetxt('D:\git_code\PHYS512\project\ps_b\Energy.txt',ener)
      x_tmp= x
      v_tmp = v
      step = take_step(x_tmp,v_tmp,dt,n,kernelft,m)
@@ -203,6 +207,7 @@ for t in range(200):
      v = v_new
      x[x<0.5] = n-0.5
      x[x>n-0.5]=0.5
+     r = np.sqrt(np.sum((x[1]-x[0])**2))
      # for i in range(x.shape[0]):
      #     for j in range(x.shape[1]):
      #         if x[i,j]< 0.5:
@@ -213,8 +218,8 @@ for t in range(200):
                
      #         else:
      #             x[i,j] = x[i,j]
-     print(t)
-
+     print(x)
+     print(r)
      a=a+1
      print(E)
 

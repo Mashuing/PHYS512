@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Dec 17 01:37:29 2020
+
+@author: Jiaxing_Home
+"""
+
 import numpy as np
 import matplotlib
 from mpl_toolkits.mplot3d import Axes3D
@@ -7,7 +14,7 @@ import pandas
 plt.rcParams['axes.prop_cycle'    ] = plt.cycler('color',['lightseagreen', 'indigo' ])
 def greens(n,sr,soft=0.03,G=0.001):
     #get the potential from a particule at (0,0,0)
-    #Take G to 0.001
+    #Take G to 1
     x = np.arange(n)/n
     x[n//2:] = x[n//2:] - n/n
     # x= np.arange(-n//2,n//2)/n
@@ -17,7 +24,18 @@ def greens(n,sr,soft=0.03,G=0.001):
     dr[dr<soft] = soft
     pot=1*G/dr
     # pot=pot-pot[n//2,n//2,n//2]  #set it so the potential at the edge goes to zero
-
+    # pot[0,0,0]=(pot[0,1,0]+pot[1,0,0]+pot[0,0,1]+pot[-1,0,0]+pot[0,-1,0]+pot[0,0,-1])/4-0.25 #we know the Laplacian in 2D picks up rho/4 at the zero point
+    # set a square place where the potential is same to set the force to 0
+    # if sr != 0:
+        
+    #     pot[:sr,:sr,:sr]=p
+    #     pot[-sr:,:sr,:sr] = p
+    #     pot[:sr,-sr:,:sr] = p
+    #     pot[:sr,:sr,-sr:]= p
+    #     pot[:sr,-sr:,-sr:]= p
+    #     pot[-sr:,-sr:,:sr]=p
+    #     pot[-sr:,:sr,-sr:]=p
+    #     pot[-sr:,-sr:,-sr:]=p
     return pot
 
 # # Check if the potential for one particle in 3d is correct
@@ -46,7 +64,7 @@ def get_forces_2(pot,deltax):
     return dx,dy,dz
 def rho2pot(rho,kernelft):
     tmp=rho.copy()
-    tmp=np.pad(tmp,(0,tmp.shape[0]))
+    # tmp=np.pad(tmp,(0,tmp.shape[0]))
 
     tmpft=np.fft.rfftn(tmp)
     tmp=np.fft.irfftn(tmpft*kernelft)
@@ -59,10 +77,28 @@ def rho2pot(rho,kernelft):
     print("error in rho2pot - unexpected number of dimensions")
     assert(1==0)
 
+# def rho2pot_masked(rho,mask,kernelft,return_mat=False):
+#     rhomat=np.zeros(mask.shape)
+#     rhomat[mask]=rho
+#     potmat=rho2pot(rhomat,kernelft)
+#     if return_mat:
+#         return potmat
+#     else:
+#         return potmat[mask]
 def take_step(x,v,dt,n,kernelft,m):
     xx=x+0.5*v*dt
     xx[xx<=0.5] = n-0.5
     xx[xx>=n-0.5]= -0.5
+    # for i in range(xx.shape[0]):
+    #     for j in range(xx.shape[1]):
+    #         if xx[i,j]<= 0.5:
+    #             xx[i,j] = n-0.5
+               
+    #         if xx[i,j]>= n-0.5:
+    #             xx[i,j] = 0.5
+               
+    #         else:
+    #             xx[i,j] = xx[i,j]
     den = density(xx,n,m)[0]
     pot = rho2pot(den,kernelft)
     # ff=np.asarray(get_forces(pot))
@@ -105,56 +141,56 @@ def covvol(v,n):
     v_r = v/np.sqrt(2*n)
     return v_r
 # grid size
-n =32
+n =256
 # number of particles
-N =1
-dt=0.5
-oversample = 1
+N =100000
+dt=0.04
+oversample = 2
 T=0
 
-# x = n*np.random.rand(N,3)
-# v = 0*np.random.rand(N,3)
+x = n*np.random.rand(N,3)
+v = 0*np.random.rand(N,3)
 
 # x= np.array([[64,64,64],[64,44,64]])
 # v=np.array([[0.,0.,0],[40.47,0,0]])
-x= np.array([[16,16,16]])
-v=np.array([[0.,0.,0]])
+# x= np.array([[16,16,16]])
+# v=np.array([[0.,0.,0]])
 
 print(x)
 m=np.ones(N)
 m[0]=1
-kernel=greens(2*n,0)
+kernel=greens(n,0)
 kernelft=np.fft.rfftn(kernel)
 den = density(x,n,m)[0]
 pot = rho2pot(den,kernelft)
-# Check the force plot
-den = density(x,n,m)[0]
-pot = rho2pot(den,kernelft)
-nf = n
-dx,dy,dz = get_forces_2(pot,1/n)
-x = np.arange(nf)
-X, Y = np.meshgrid(x, x)
-dx2d=np.zeros([nf,nf])
-dy2d=np.zeros([nf,nf])
-dz2d=np.zeros([nf,nf])
-for i in range(nf):
-    for j in range(nf):
-          dx2d[i,j]=dx[i,j,nf//2]
-          dy2d[i,j]=dy[i,j,nf//2]
-          dz2d[i,j]=dz[i,j,nf//2]
+# # Check the force plot
+# den = density(x,n,m)[0]
+# pot = rho2pot(den,kernelft)
+# nf = n
+# dx,dy,dz = get_forces_2(pot,1/n)
+# x = np.arange(nf)
+# X, Y = np.meshgrid(x, x)
+# dx2d=np.zeros([nf,nf])
+# dy2d=np.zeros([nf,nf])
+# dz2d=np.zeros([nf,nf])
+# for i in range(nf):
+#     for j in range(nf):
+#           dx2d[i,j]=dx[i,j,nf//2]
+#           dy2d[i,j]=dy[i,j,nf//2]
+#           dz2d[i,j]=dz[i,j,nf//2]
 
-fig1, ax1 = plt.subplots()
-fig2, ax2 = plt.subplots()
-zero=np.zeros(dy.shape)
-ax2.imshow(dx[:,:,nf//2])
-ax1.quiver(Y, X,dx[:,:,nf//2],dy[:,:,nf//2])
+# fig1, ax1 = plt.subplots()
+# fig2, ax2 = plt.subplots()
+# zero=np.zeros(dy.shape)
+# ax2.imshow(dx[:,:,nf//2])
+# ax1.quiver(Y, X,dx[:,:,nf//2],dy[:,:,nf//2])
 
-ax1.xaxis.set_ticks([])
-ax1.yaxis.set_ticks([])
-ax1.set_aspect('equal')
-plt.show()
-# r = take_step(x,v,dt,n,kernelft,m)
-# # Check if the potential for one particle in 3d is correct
+# ax1.xaxis.set_ticks([])
+# ax1.yaxis.set_ticks([])
+# ax1.set_aspect('equal')
+# plt.show()
+# # r = take_step(x,v,dt,n,kernelft,m)
+# Check if the potential for one particle in 3d is correct
 
 # pot2d = np.zeros([nf,nf])
 # x = 0
@@ -167,9 +203,20 @@ plt.show()
 # Start the simulation
 fig=plt.figure()#Create 3D axes
 ax=fig.add_subplot(projection="3d")
+# ax.scatter(x[:,0],x[:,1],x[:,2],color='blue',marker=".",s=0.02)
+# ax.set_xlim(0,n)
+# ax.set_ylim(0,n)
+# ax.set_zlim(0,n)
+# for i in range (x.shape[0]):
+    
+#     ax.scatter(x[i][0],x[i][1],x[i][2],color='blue',marker=".",s=0.02)
+#     ax.set_xlim(0,n)
+#     ax.set_ylim(0,n)
+#     ax.set_zlim(0,n)
+# fig.savefig('D:/git_code/PHYS512/project/ps_c/3dinitial.png', dpi=600)
 a=0
 position = []
-f= open('D:\git_code\PHYS512\project\ps_a\position.npy','ab')
+f= open('D:\git_code\PHYS512\project\ps_c_periodic\position.npy','ab')
 ener = []
 time = []
 
@@ -182,16 +229,16 @@ for t in range(200):
      time.append(T)
      if t%oversample==0:
          plt.cla()
-         ax.scatter(x[:,0],x[:,1],x[:,2],color='blue',marker=".",s=2)
+         ax.scatter(x[:,0],x[:,1],x[:,2],color='blue',marker=".",s=0.02)
          ax.set_xlim(0,n)
          ax.set_ylim(0,n)
          ax.set_zlim(0,n)
          ax.set_title('Time ='+str(T)+"\nEnergy="+str(E))
-         fig.savefig('D:/git_code/PHYS512/project/ps_a/'+'bla'+str(t)+'.png', dpi=600)
+         fig.savefig('D:/git_code/PHYS512/project/ps_c_periodic/'+'bla'+str(t)+'.png', dpi=600)
          
                 
          plt.pause(0.001)
-     np.savetxt('D:\git_code\PHYS512\project\ps_a\Energy.txt',ener)
+     np.savetxt('D:\git_code\PHYS512\project\ps_c_periodic\Energy.txt',ener)
      x_tmp= x
      v_tmp = v
      step = take_step(x_tmp,v_tmp,dt,n,kernelft,m)
