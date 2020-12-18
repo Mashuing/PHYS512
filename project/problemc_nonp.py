@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """
 Created on Wed Dec 16 17:47:16 2020
 
@@ -271,5 +271,3 @@ for t in range(200):
      a=a+1
      print(E)
 
-    
-# x=np.load('D:\git_code\PHYS512\project\position.npy')

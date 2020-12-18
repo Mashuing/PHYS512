@@ -108,7 +108,7 @@ def covvol(v,n):
 n =32
 # number of particles
 N =1
-dt=0.5
+dt=0.1
 oversample = 1
 T=0
 
@@ -117,7 +117,7 @@ T=0
 
 # x= np.array([[64,64,64],[64,44,64]])
 # v=np.array([[0.,0.,0],[40.47,0,0]])
-x= np.array([[16,16,16]])
+x= np.array([[8,16,16]])
 v=np.array([[0.,0.,0]])
 
 print(x)
@@ -154,7 +154,7 @@ ax1.yaxis.set_ticks([])
 ax1.set_aspect('equal')
 plt.show()
 # r = take_step(x,v,dt,n,kernelft,m)
-# # Check if the potential for one particle in 3d is correct
+# Check if the potential for one particle in 3d is correct
 
 # pot2d = np.zeros([nf,nf])
 # x = 0
@@ -182,7 +182,7 @@ for t in range(200):
      time.append(T)
      if t%oversample==0:
          plt.cla()
-         ax.scatter(x[:,0],x[:,1],x[:,2],color='blue',marker=".",s=2)
+         ax.scatter(x[:,0],x[:,1],x[:,2],color='blue',marker=".",s=5)
          ax.set_xlim(0,n)
          ax.set_ylim(0,n)
          ax.set_zlim(0,n)

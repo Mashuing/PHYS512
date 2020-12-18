@@ -62,7 +62,7 @@ def rho2pot(rho,kernelft):
 def take_step(x,v,dt,n,kernelft,m):
     xx=x+0.5*v*dt
     xx[xx<=0.5] = n-0.5
-    xx[xx>=n-0.5]= -0.5
+    xx[xx>=n-0.5]= 0.5
     den = density(xx,n,m)[0]
     pot = rho2pot(den,kernelft)
     # ff=np.asarray(get_forces(pot))

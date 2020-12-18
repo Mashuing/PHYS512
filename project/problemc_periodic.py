@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 import time
 import pandas
 plt.rcParams['axes.prop_cycle'    ] = plt.cycler('color',['lightseagreen', 'indigo' ])
-def greens(n,sr,soft=0.03,G=0.001):
+def greens(n,sr,soft=0.04,G=0.001):
     #get the potential from a particule at (0,0,0)
     #Take G to 1
     x = np.arange(n)/n
@@ -81,7 +81,7 @@ def rho2pot(rho,kernelft):
 def take_step(x,v,dt,n,kernelft,m):
     xx=x+0.5*v*dt
     xx[xx<=0.5] = n-0.5
-    xx[xx>=n-0.5]= -0.5
+    xx[xx>=n-0.5]= 0.5
     # for i in range(xx.shape[0]):
     #     for j in range(xx.shape[1]):
     #         if xx[i,j]<= 0.5:
@@ -137,14 +137,14 @@ def covvol(v,n):
 n =256
 # number of particles
 N =100000
-dt=0.04
+dt=0.001
 oversample = 2
 T=0
 
 x = n*np.random.rand(N,3)
-v = 0*np.random.rand(N,3)
+v = np.random.rand(N,3)
 
-# x= np.array([[64,64,64],[64,44,64]])
+# x= np.array([[64,64,64],[251,44,64]])
 # v=np.array([[0.,0.,0],[40.47,0,0]])
 # x= np.array([[16,16,16]])
 # v=np.array([[0.,0.,0]])
@@ -221,8 +221,8 @@ for t in range(200):
      ener.append(E)
      time.append(T)
      if t%oversample==0:
-         plt.cla()
-         ax.scatter(x[:,0],x[:,1],x[:,2],color='blue',marker=".",s=0.02)
+         # plt.cla()
+         ax.scatter(x[:,0],x[:,1],x[:,2],color='blue',marker=".",s=2)
          ax.set_xlim(0,n)
          ax.set_ylim(0,n)
          ax.set_zlim(0,n)
@@ -259,4 +259,3 @@ for t in range(200):
      print(E)
 
     
-# x=np.load('D:\git_code\PHYS512\project\position.npy')
